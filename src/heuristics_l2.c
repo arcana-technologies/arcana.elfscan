@@ -130,8 +130,6 @@ bool
 ac_heuristics_l2_packed_executable(struct arcana_ctx *ac, struct obj_struct *obj,
     struct elfobj_infection_state *infection, bool *hres)
 {
-	struct ac_infection_data infdata;
-	size_t load_count = 0;
 
 	*hres = false;
 
@@ -462,7 +460,6 @@ ac_heuristics_l2_pt_note_infection(struct arcana_ctx *ac, struct obj_struct *obj
 {
 	*hres = false;
 	uint64_t hook_vaddr, low_vaddr, high_vaddr;
-	struct elf_section shdr;
 	ac_hooks_t hook_type;
 
 	assert((ac_heuristics_get_l1_infection_data(obj,
@@ -527,8 +524,6 @@ ac_heuristics_l2_pt_note_infection(struct arcana_ctx *ac, struct obj_struct *obj
 
 	if (ac_heuristics_confidence_level(infection,
 	    CONFIDENCE_LEVEL_HIGH) == true) {
-		struct elf_section shdr;
-
 		*hres = true;
 		ac_alert("ELF Object: %s <-> has a PT_NOTE infection"
 		    " in the range: %#lx-%#lx\n",
@@ -542,8 +537,6 @@ ac_heuristics_2(struct arcana_ctx *ac, struct obj_struct *obj,
     struct elfobj_infection_state *infection)
 {
 	bool res, hres;
-	static uint32_t unsafe_static_count = 0;
-	uint32_t final_result = 0;
 
 	/*
 	 * Look deeper into reverse text infection. Is it
