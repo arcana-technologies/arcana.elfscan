@@ -15,17 +15,19 @@ to test against. :)
 
 ## Compile and install
 
-git clone https://github.com/arcana-technologies/arcana.elfscan
-cd arcana.elfscan
+```
+$ git clone https://github.com/arcana-technologies/arcana.elfscan
+$ cd arcana.elfscan
 
-mkdir build
-cd build
-cmake ..
-make
-cd ../plugins
-make
-cd ..
-sudo ./install.sh
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ cd ../plugins
+$ make
+$ cd ..
+$ sudo ./install.sh
+```
 
 ## Try Arcana Elfscan
 
