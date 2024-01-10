@@ -1,31 +1,29 @@
 # Arcana ElfScan
 
 Arcana ElfScan is an open source ELF binary forensics tool for APT, virus,
-backdoor and rootkit detection. Arcana.ElfScan is open sourced under the MIT
+backdoor and rootkit detection. It has been released open source under the MIT
 license.
 
-Author: Ryan "ElfMaster" O'Neill, 2018 - 2024
+### Author
+
+Ryan "ElfMaster" O'Neill, 2018-2024
+
+### Contributions
 
 Thank you to MalcomVX for continuing to design new APT's, Viruses, and implants
 to test against. :)
 
 ## Compile and install
 
--= Get Arcana.Elfscan
 git clone https://github.com/arcana-technologies/arcana.elfscan
 cd arcana.elfscan
 
--= Build the arcana.elfscan binary
 mkdir build
 cd build
 cmake ..
 make
-
--= Build plugins optionally
 cd ../plugins
 make
-
--= Install Arcana, plugins, config files, etc.
 cd ..
 sudo ./install.sh
 
