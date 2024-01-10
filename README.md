@@ -13,6 +13,19 @@ Ryan "ElfMaster" O'Neill, 2018-2024
 Thank you to MalcomVX for continuing to design new APT's, Viruses, and implants
 to test against. :)
 
+## Supported Architectures
+
+Arcana runs on Linux x86_32/x86_64 and is designed to scan x86_32/x86_64 ELF
+binaries. It is however loosely reasonable (Although undefined) to feed Arcana ELF
+binaries from other systems; if you choose to do this make sure to edit the line
+to disable IDS mode in arcana: "/opt/arcana/conf/arcana.conf"
+
+`instrusion_detection_mode = true`
+
+So that it is set to false, i.e.
+
+`instrusion_detection_mode = false`
+
 ## Compile and install
 
 ```
