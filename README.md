@@ -31,8 +31,10 @@ $ sudo ./install.sh
 
 ## Try Arcana Elfscan
 
+```
 $ arcana -e /bin/ls
 $ arcana -e ~/git/arcana.elfscan/infected_bins/jp-retal
+```
 
 ## Description of Arcana ElfScan
 
