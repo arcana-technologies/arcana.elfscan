@@ -73,22 +73,14 @@ ac_config_classify_file(struct ac_file *file, const char *path)
 	}
 	return true;
 }
-/*
- * TODO
- * In essence I believe this should actually be called `whitelist` and not `blacklist`
- * due to the fact that we are "allowing" certain shared libraries to use symbol interposition
- * without calling them out as a DT_NEEDED infection. This is due to cases where symbol
- * interposition is legitimate but appears infected, causing false positives. Hence we
- * have an injection whitelist that tells us which shared libraries are allowed to have
- * this anomaly situation. :)
- */
+
 static bool
-ac_config_process_injection_blacklist(arcana_ctx_t *ac, char *value)
+ac_config_process_injection_whitelist(arcana_ctx_t *ac, char *value)
 {
 	char *sp, *p, *np;
 	char *ptr = value;
 
-	SLIST_INIT(&ac->config.injection_blacklist);
+	SLIST_INIT(&ac->config.injection_whitelist);
 
 	while ((p = strtok_r(ptr, ",: ", &sp)) != NULL) {
 		struct ac_file *file = ac_malloc(sizeof(*file), ac);
@@ -116,7 +108,7 @@ ac_config_process_injection_blacklist(arcana_ctx_t *ac, char *value)
 			file->flag |= AC_FILE_UNKNOWN;
 			file->path = file->basename = ac_strdup(name, ac);
 		}
-		SLIST_INSERT_HEAD(&ac->config.injection_blacklist, file, _linkage);
+		SLIST_INSERT_HEAD(&ac->config.injection_whitelist, file, _linkage);
 		ptr = NULL;
 	}
 	return true;
@@ -281,9 +273,9 @@ ac_config_parse(struct arcana_ctx *ac)
 		if (strcasecmp(key, "blacklist") == 0) {
 			ac_config_process_blacklist(ac, value);
 			ac->config.flags |= AC_CONFIG_BLACKLIST;
-		} else if (strcasecmp(key, "injection_blacklist") == 0) {
-			ac_config_process_injection_blacklist(ac, value);
-			ac->config.flags |= AC_CONFIG_INJECTION_BLACKLIST;
+		} else if (strcasecmp(key, "injection_whitelist") == 0) {
+			ac_config_process_injection_whitelist(ac, value);
+			ac->config.flags |= AC_CONFIG_INJECTION_WHITELIST;
 		} else {
 			p = strchr(value, '\n');
 			if (p != NULL)

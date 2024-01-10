@@ -247,11 +247,11 @@ ac_heuristics_display_so_injection(struct arcana_ctx *ac, elfobj_t *elfobj,
 		struct ac_so_plt_pair *current, *offending_lib, *next = NULL;
 		offending_lib = current = LIST_FIRST(&injection->so_plt_list);
 		next = LIST_NEXT(current, _linkage);
-		if (ac_config_check(ac, AC_CONFIG_INJECTION_BLACKLIST) == true) {
+		if (ac_config_check(ac, AC_CONFIG_INJECTION_WHITELIST) == true) {
 			struct ac_file *bl_obj;
 
 			SLIST_FOREACH(bl_obj,
-			    &ac->config.injection_blacklist, _linkage) {
+			    &ac->config.injection_whitelist, _linkage) {
 				if (strchr(bl_obj->path, '/') == NULL) {
 					if (strstr(offending_lib->libpath,
 					    bl_obj->path) != NULL) {
@@ -297,11 +297,11 @@ no_plt_linkage:
 	struct ac_shared_object *current;
 
 	LIST_FOREACH(current, &injection->suspicious_so_list, _linkage) {
-		if (ac_config_check(ac, AC_CONFIG_INJECTION_BLACKLIST) == true) {
+		if (ac_config_check(ac, AC_CONFIG_INJECTION_WHITELIST) == true) {
 			struct ac_file *bl_obj;
 
 			SLIST_FOREACH(bl_obj,
-			    &ac->config.injection_blacklist, _linkage) {
+			    &ac->config.injection_whitelist, _linkage) {
 				if (strchr(bl_obj->path, '/') == NULL) {
 					if (strstr(current->path,
 					    bl_obj->path) != NULL) {

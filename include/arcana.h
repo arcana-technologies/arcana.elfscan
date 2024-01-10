@@ -136,7 +136,7 @@ typedef enum config_flags {
 	AC_CONFIG_AGGRESSIVE = 	(1 << 3),
 	AC_CONFIG_SCAN_LKMS =	(1 << 4),
 	AC_CONFIG_CLASSIFY =	(1 << 5),
-	AC_CONFIG_INJECTION_BLACKLIST =	(1 << 6),
+	AC_CONFIG_INJECTION_WHITELIST =	(1 << 6),
 	AC_CONFIG_PLUGIN_DIR =	(1 << 7),
 	AC_CONFIG_LIGHTWEIGHT = (1 << 8),
 	AC_CONFIG_IDS_MODE =	(1 << 9),
@@ -340,7 +340,7 @@ typedef struct arcana_ctx {
 		const char *plugin_dir;
 		const char *container_root;
 		SLIST_HEAD(blacklist, ac_file) blacklist;
-		SLIST_HEAD(injection_blacklist, ac_file) injection_blacklist;
+		SLIST_HEAD(injection_whitelist, ac_file) injection_whitelist;
 		SLIST_HEAD(plugin_list, ac_plugin) plugin_list;
 	} config;
 } arcana_ctx_t;
