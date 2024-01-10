@@ -42,7 +42,7 @@ implants, and userland rootkits. These underground techniques are able to
 cleverly modify the ELF binary in such a way that it looks and behaves normally
 to the un-trained eye, but under the hood it is surreptitiously executing
 threatening code. Arcana aims to mitigate these threats by giving users the
-ability to finally detect these "Advanced persistent threats".
+ability to finally detect this type of "Advanced persistent threats".
 
 Arcana does not analyze the code itself, but rather validates the structural
 geometry of the ELF binary at an extremely nuanced level, with inherent insight
@@ -145,9 +145,9 @@ void exit_plugin_detect_go_binary(arcana_ctx_t *ac, struct obj_struct *obj, void
 
 This plugin should be fairly easy to dissect. At runtime, just before the
 heuristics L1 is fired off, this plugin will be executed; specifically the
-```init_plugin_detect_go_binary()``` will be executed, passing Arcana's state
-to the plugin via ```arcana_ctx_t *ac``` pointer and an optional argument
-```void **arg```.
+`init_plugin_detect_go_binary()` will be executed, passing Arcana's state
+to the plugin via `arcana_ctx_t *ac` pointer and an optional argument
+`void **arg`.
 
 This particular plugin detects whether or not an ELF binary was created by GO.
 It simply checks whether the ELF section ".gosymtab" exists within the ELF
