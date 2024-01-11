@@ -35,16 +35,21 @@ So that it is set to false, i.e.
 ```
 $ git clone https://github.com/arcana-technologies/arcana.elfscan
 $ cd arcana.elfscan
-
 $ mkdir build
 $ cd build
 $ cmake ..
 $ make
+$ sudo make install
+```
+
+## Compile and install Arcana plugins
+
+```
 $ cd ../plugins
 $ make
-$ cd ..
-$ sudo ./install.sh
+$ sudo cp *.so /opt/arcana/plugins
 ```
+
 
 ## Try Arcana Elfscan
 
