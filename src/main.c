@@ -76,7 +76,14 @@ int main(int argc, char **argv)
 			break;
 		case 'e':
 			ac.opts.single = true;
-			ac.target_file = strdup(optarg);
+			ac.target_file = malloc(strlen(optarg) + 3);
+			if (strchr(optarg, '/') == NULL) {
+				ac.target_file[0] = '.';
+				ac.target_file[1] = '/';
+				strcpy(&ac.target_file[2], optarg);
+			} else {
+				strcpy(ac.target_file, optarg);
+			}
 			if (ac.target_file == NULL) {
 				perror("strdup");
 				exit(EXIT_FAILURE);
