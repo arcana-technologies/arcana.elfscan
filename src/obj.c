@@ -177,6 +177,7 @@ ac_plugin_validate(struct ac_plugin *plugin)
 					return false;
 				} else {
 					ac_printf("Plugin type: %d\n", plugin_type);
+					memcpy(&plugin->type, &plugin_type, sizeof(ac_plugin_type_t));
 					sym_count++;
 					continue;
 				}
