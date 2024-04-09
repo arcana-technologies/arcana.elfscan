@@ -35,15 +35,15 @@ init_plugin_detect_extended_section(arcana_ctx_t *ac, struct obj_struct *obj, vo
 	read_init = 0;
 	read_fini = 0;
 
-	if(elf_section_by_name(elfobj, ".init", &init) != NULL) {
-		if(elf_section_by_name(elfobj, ".plt", &plt) != NULL) {
+	if(elf_section_by_name(elfobj, ".init", &init) == true) {
+		if(elf_section_by_name(elfobj, ".plt", &plt) == true) {
 			printf("Found .init and .plt sections.\n");
 			read_init = 1;
 		}
 	}
 
-	if(elf_section_by_name(elfobj, ".fini", &fini) != NULL) {
-		if(elf_section_by_name(elfobj, ".rodata", &rodata) != NULL) {
+	if(elf_section_by_name(elfobj, ".fini", &fini) == true) {
+		if(elf_section_by_name(elfobj, ".rodata", &rodata) == true) {
 			printf("Found .fini and .rodata sections.\n");
 			read_fini = 1;
 		}
@@ -82,16 +82,16 @@ init_plugin_detect_extended_section(arcana_ctx_t *ac, struct obj_struct *obj, vo
 		/* padding bytes after .init section have been altered */
 		obj->verdict = AC_VERDICT_INFECTED;
 		printf("Extension of .init section detected\n");
-		printf("End of section at offset: %x\n", init.offset + (uint64_t)init.size );
-		printf("Last padding byte altered at offset: %x\n", init_last_byte);
+		printf("End of section at offset: %lx\n", init.offset + (uint64_t)init.size );
+		printf("Last padding byte altered at offset: %lx\n", init_last_byte);
 	}
 
 	if(fini_last_byte != 0) {
 		/* padding bytes after .fini section have been altered */
 		obj->verdict = AC_VERDICT_INFECTED;
 		printf("Extension of .fini section detected\n");
-		printf("End of section at offset: %x\n", fini.offset + (uint64_t)fini.size );
-		printf("Last padding byte altered at offset: %x\n", fini_last_byte);
+		printf("End of section at offset: %lx\n", fini.offset + (uint64_t)fini.size );
+		printf("Last padding byte altered at offset: %lx\n", fini_last_byte);
 	} 
 
 	if(init_last_byte || fini_last_byte) {
