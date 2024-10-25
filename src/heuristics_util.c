@@ -29,7 +29,7 @@ ac_heuristics_infection_set_reloc(struct ac_infection_data *infdata, struct elf_
 
 	memcpy(&infdata->rel, rel, sizeof(struct elf_relocation));
 	infdata->data_flags |= AC_INFECTION_RELOC;
-	return true;
+	return;
 }
 
 void

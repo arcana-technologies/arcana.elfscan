@@ -17,91 +17,92 @@
 #include "/opt/elfmaster/include/libelfmaster.h"
 
 const ac_plugin_type_t plugin_type = 0;
-ac_plugin_name_t plugin_name = "extended section plugin v1";
+ac_plugin_name_t plugin_name = "extended section plugin v2";
+
+static bool
+check_padding(struct elfobj *elfobj, uint64_t lower_bound, uint64_t upper_bound)
+{
+	uint64_t i;
+	uint8_t *ptr, last_byte = 0;
+	for (i = lower_bound; i < upper_bound; i++) {
+		ptr = elf_offset_pointer(elfobj, i);
+		/* If elf_offset_pointer returns NULL, it's not a
+		 * sane offset - abort the search.
+		 */
+		if (!ptr)
+			return false;
+
+		// save the last non-zero byte
+		if (*ptr != 0)
+			last_byte = *ptr;
+	}
+
+	if (last_byte)
+		return true;
+
+	return false;
+}
+
+static bool
+check_init_section(struct elfobj *elfobj)
+{
+	struct elf_section init, cont_init;
+	if (!elf_section_by_name(elfobj, ".init", &init)) {
+		printf("No .init section found\n");
+		return false;
+	}
+	printf("Found .init section @ 0x%lx\n", init.offset);
+	if (elf_section_by_name(elfobj, ".plt", &cont_init)) {
+		printf("Found .plt section @ 0x%lx\n", cont_init.offset);
+		return check_padding(elfobj, init.offset+init.size, cont_init.offset);
+	}
+
+	printf("ELF without PLT detected\n");
+
+	if (elf_section_by_name(elfobj, ".text", &cont_init)) {
+		printf("Found .text section @ 0x%lx\n", cont_init.offset);
+		return check_padding(elfobj, init.offset+init.size, cont_init.offset);
+	}
+
+	printf(".init is followed by an unexpected section\n");
+	return false;
+}
+
+static bool
+check_fini_section(struct elfobj *elfobj)
+{
+	struct elf_section fini, cont_fini;
+	if (!elf_section_by_name(elfobj, ".fini", &fini)) {
+		printf("No .fini section found\n");
+		return false;
+	}
+	printf("Found .fini section @ 0x%lx\n", fini.offset);
+	if (elf_section_by_name(elfobj, ".rodata", &cont_fini)) {
+		printf("Found .rodata section @ 0x%lx\n", cont_fini.offset);
+		return check_padding(elfobj, fini.offset+fini.size, cont_fini.offset);
+	}
+
+	printf(".fini is followed by an unexpected section\n");
+	return false;
+}
 
 bool
 init_plugin_detect_extended_section(arcana_ctx_t *ac, struct obj_struct *obj, void **arg)
 {
 	(void)arg;
-	uint8_t *ptr, read_init, read_fini;
-	uint64_t i, init_last_byte, fini_last_byte;
 
-	elfobj_t *elfobj = obj->elfobj;
-	/* executable sections that are most likely to be extended */
-	struct elf_section init, fini;
-	/* contiguous sections to .init and .fini */
-	struct elf_section plt, rodata;
-
-	read_init = 0;
-	read_fini = 0;
-
-	if(elf_section_by_name(elfobj, ".init", &init) == true) {
-		if(elf_section_by_name(elfobj, ".plt", &plt) == true) {
-			printf("Found .init and .plt sections.\n");
-			read_init = 1;
-		}
-	}
-
-	if(elf_section_by_name(elfobj, ".fini", &fini) == true) {
-		if(elf_section_by_name(elfobj, ".rodata", &rodata) == true) {
-			printf("Found .fini and .rodata sections.\n");
-			read_fini = 1;
-		}
-	}
-
-	if(!read_init && !read_fini) {
-		printf("Couldn't read .init or .fini sections\n");
-		return false;
-	}
-
-	/* last non-zero byte after the end of .init or .fini */
-	init_last_byte = 0;
-
-	/* loop from the end of .init to the start of .plt */
-	for(i = init.offset + (uint64_t)init.size; i < plt.offset; i++) {
-		ptr = elf_offset_pointer(elfobj, i);
-		if(*ptr != 0) {
-			/* save the last non-zero byte */
-			init_last_byte = i;
-		}
-	}
-
-	/* last non-zero byte after the end of .init or .fini */
-	fini_last_byte = 0;
-
-	/* loop from the end of .fini to the start of .rodata */
-	for(i = fini.offset + (uint64_t)fini.size; i < rodata.offset; i++) {
-		ptr = elf_offset_pointer(elfobj, i);
-		if(*ptr != 0) {
-			/* save the last non-zero byte */
-			fini_last_byte = i;
-		}
-	}
-
-	if(init_last_byte != 0) {
+	if (check_init_section(obj->elfobj)) {
 		/* padding bytes after .init section have been altered */
 		obj->verdict = AC_VERDICT_INFECTED;
 		printf("Extension of .init section detected\n");
-		printf("End of section at offset: %lx\n", init.offset + (uint64_t)init.size );
-		printf("Last padding byte altered at offset: %lx\n", init_last_byte);
 	}
 
-	if(fini_last_byte != 0) {
+	if (check_fini_section(obj->elfobj)) {
 		/* padding bytes after .fini section have been altered */
 		obj->verdict = AC_VERDICT_INFECTED;
 		printf("Extension of .fini section detected\n");
-		printf("End of section at offset: %lx\n", fini.offset + (uint64_t)fini.size );
-		printf("Last padding byte altered at offset: %lx\n", fini_last_byte);
-	} 
-
-	if(init_last_byte || fini_last_byte) {
-		return true;
 	}
-
-	if(!init_last_byte && !fini_last_byte) {
-		printf("Extension of .init or .fini sections not detected\n");
-		return false;
-	}
+	return true;
 }
 
 void exit_plugin_detect_extended_section(arcana_ctx_t *ac, struct obj_struct *obj, void **arg)
