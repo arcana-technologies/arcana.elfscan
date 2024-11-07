@@ -172,7 +172,7 @@ ac_heuristics_l2_packed_executable(struct arcana_ctx *ac, struct obj_struct *obj
 	if (ac_heuristics_get_l1_infection_data(obj,
 	    AC_ANOMALY_F_NOSTDLIB_LINKING, NULL) == true) {
 		ac_alert("ELF Object: %s <-> built with -nostdlib linking"
-		    " which indicates a stub\n");
+		    " which indicates a stub\n", elf_pathname(obj->elfobj));
 		ac_heuristics_confidence_set(infection, CONFIDENCE_LEVEL_HIGH);
 		*hres = true;
 	}
